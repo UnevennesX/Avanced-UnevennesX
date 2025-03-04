@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Surveys</title>
+    <link rel="icon" type="image/png"
+        href="https://cdn.dribbble.com/users/7549673/screenshots/17206704/media/1210a9d0ec8af427967e735935861eeb.png?resize=400x300&vertical=center"
+        alt="Imagen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #2d2d2d;
+            --light-color: #ffffff;
+            --text-color: #e0e0e0;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --border-radius: 8px;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease-in-out;
+            --form-bg-color: #2d2d2d;
+            --form-border-color: #444;
+            --highlight-color: #64b5f6;
+            --accent-color: #2196f3;
+            --hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --active-filter-bg: #3a3a3a;
+            --filter-hover-bg: rgba(255, 255, 255, 0.05);
+            /* New: Hover background color for filters */
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: #262626;
+            color: var(--light-color);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 4px;
+            background-color: var(--accent-color);
+            transition: width 0.5s ease-in-out;
+        }
+
+        .header:hover::after {
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 500;
+            margin-bottom: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            margin: 2rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background-color: var(--secondary-color);
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--border-radius);
+        }
+
+        .sidebar h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-color);
+            font-weight: 500;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex: 1;
+        }
+
+        .sidebar li {
+            margin-bottom: 1.2rem;
+        }
+
+        .sidebar a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background-color: var(--accent-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease-in-out;
+            transform-origin: top;
+        }
+
+        .sidebar a:hover::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: var(--active-filter-bg);
+            color: var(--light-color);
+            box-shadow: var(--hover-shadow);
+        }
+
+        /* Active Style */
+
+        /* Style for filter hover */
+        .sidebar a:hover {
+            background-color: var(--filter-hover-bg);
+        }
+
+        .sidebar a i {
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            background-color: var(--form-bg-color);
+            color: var(--text-color);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            box-shadow: var(--shadow);
+        }
+
+        /* Header Button */
+        #add-survey-btn {
+            background-color: #4c5861;
+            /* Original color */
+            color: var(--light-color);
+            padding: 0.9rem 1.6rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+            margin-inline: 0.2rem;
+        }
+
+        /*  Header Button Hover */
+        #add-survey-btn:hover {
+            background-color: #5e6c77;
+            /* Slightly darker */
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        #add-survey-form {
+            display: none;
+            margin-top: 1rem;
+            padding: 2rem;
+            background-color: var(--form-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        #add-survey-form.active {
+            display: block;
+        }
+
+        #add-survey-form label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 500;
+            color: var(--light-color);
+            font-size: 1.1rem;
+        }
+
+        /* Restore default styles for the datetime input */
+        #add-survey-form input[type="text"],
+        #add-survey-form select,
+        #add-survey-form input[type="datetime-local"],
+        #add-survey-form textarea {
+            width: 100%;
+            /* Asegurar que los inputs ocupen todo el ancho */
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--form-border-color);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            outline: none;
+            background-color: #3a3a3a;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        #add-survey-form input[type="text"]:focus,
+        #add-survey-form select:focus,
+        #add-survey-form input[type="datetime-local"]:focus,
+        #add-survey-form textarea:focus {
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 8px rgba(100, 181, 246, 0.7);
+        }
+
+        #add-survey-form textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Form Buttons */
+        #add-survey-form button[type="button"] {
+            background-color: #4c5861;
+            /* Original color */
+            color: var(--light-color);
+            border: none;
+            padding: 0.8rem 1.3rem;
+            /* Slightly reduced padding */
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow);
+            outline: none;
+            font-size: 1rem;
+            /* Slightly smaller font size */
+            font-weight: 500;
+            margin-inline: 0.5rem;
+            /* Reduced margin */
+        }
+
+        /* Button hover effect */
+        #add-survey-form button[type="button"]:hover {
+            background-color: #5e6c77;
+            /* Slightly darker */
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        #survey-table-container {
+            display: block;
+            overflow-x: auto;
+        }
+
+        #survey-table-container.hidden {
+            display: none;
+        }
+
+        #survey-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        #survey-table th,
+        #survey-table td {
+            padding: 1.4rem;
+            border: 1px solid #444;
+            text-align: left;
+            white-space: nowrap;
+            /* Prevent text wrapping */
+
+        }
+
+        /*  Important: Adjust column width to content */
+        #survey-table th:nth-child(2),
+        #survey-table td:nth-child(2) {
+            width: 1%;  /*Set a small initial width */
+            white-space: nowrap; /* Prevent wrapping */
+        }
+
+        #survey-table th {
+            background-color: #444;
+            font-weight: 500;
+            color: var(--light-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #survey-table td {
+            color: var(--text-color);
+        }
+
+        .action-buttons {
+            text-align: center;
+        }
+
+        .action-buttons button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .action-buttons button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .edit-btn {
+            color: var(--warning-color);
+        }
+
+        .delete-btn {
+            color: var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1.5rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+                border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            }
+
+            #add-survey-btn {
+                font-size: 1rem;
+                padding: 0.7rem 1.2rem;
+            }
+
+            #survey-table th,
+            #survey-table td {
+                padding: 1rem;
+            }
+
+            .image-container {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .image-item {
+                flex: 0 0 auto;
+                width: auto;
+                max-width: 100px;
+            }
+
+            .image-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                display: block;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: translateY(-20px);
+            text-align: center;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+            color: var(--light-color);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+            color: var(--light-color);
+        }
+
+        .error {
+            color: var(--danger-color);
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .pagination {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .pagination a {
+            color: var(--light-color);
+            padding: 0.6rem 0.9rem;
+            text-decoration: none;
+            border: 1px solid var(--form-border-color);
+            margin: 0 0.2rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            display: inline-block;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .pagination a.active {
+            background-color: var(--accent-color);
+            color: var(--light-color);
+            border-color: var(--accent-color);
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: var(--highlight-color);
+            color: var(--light-color);
+            box-shadow: var(--hover-shadow);
+        }
+
+        @media (max-width: 480px) {
+            .pagination a {
+                padding: 0.5rem 0.7rem;
+                margin: 0 0.1rem;
+                font-size: 0.8rem;
+                min-width: 30px;
+            }
+        }
+
+        #current-filter {
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* Active state for sidebar links */
+        .sidebar a.active {
+            background-color: var(--active-filter-bg);
+            color: var(--light-color);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .sidebar a.active::before {
+            transform: scaleY(1);
+        }
+
+        /* Search */
+        .search-container {
+            position: relative;
+            margin: 1rem 0;
+            transition: var(--transition);
+            /* Agregar transición para suavizar la aparición/desaparición */
+        }
+
+        .search-container.hidden {
+            display: none;
+            /* Ocultar el contenedor de búsqueda */
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 0.7rem 2.5rem 0.7rem 0.7rem;
+            /* Ajustar el padding */
+            border: 1px solid var(--form-border-color);
+            border-radius: var(--border-radius);
+            background-color: #3a3a3a;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-top: auto;
+        }
+
+        .search-container .fa-search {
+            position: relative;
+            right: 0.7rem;
+            /* Ajustar la posición del icono */
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* Style the search icon properly */
+        .search-container i.fa-search {
+            position: absolute;
+            right: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .filter-display.hidden {
+            display: none;
+        }
+
+        input[type="datetime-local"][readonly]::-webkit-calendar-picker-indicator {
+            display: none;
+            /* Hide the dropdown button */
+            opacity: 0;
+        }
+
+        input[type="datetime-local"][readonly] {
+            pointer-events: none;
+            /* Prevent interaction */
+        }
+
+        /* Styles for URL display */
+        .url-container {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+
+        }
+
+        .url-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: inherit;
+            font-family: inherit;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+
+        .url-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+
+        }
+
+        .url-button .fa-eye {
+            opacity: 0.7;
+
+        }
+
+        /* Full URL Popup */
+        .url-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--form-border-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            display: none; /* Initially Hidden */
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+            text-align: center;
+
+        }
+
+        .url-popup button {
+            background-color: #4c5861;
+            color: var(--light-color);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            outline: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 1rem;
+
+        }
+
+        .url-popup button:hover {
+            background-color: #5e6c77;
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+
+        }
+
+        /* Show Popup */
+        .url-popup.show {
+            display: block;
+
+        }
+
+        /* Added styles */
+
+        .duplicate-options {
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .duplicate-options button {
+            background-color: #4c5861;
+            /* Original color */
+            color: var(--light-color);
+            border: none;
+            padding: 0.6rem 1rem;
+            /* Slightly reduced padding */
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            outline: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-inline: 0.2rem;
+        }
+
+        .duplicate-options button:hover {
+            background-color: #5e6c77;
+            /* Slightly darker */
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .duplicate-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .duplicate-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+            display: inline-block;
+        }
+
+        .token-display {
+           font-style: italic;
+           color: var(--warning-color);
+        }
+
+        /* Header Button */
+        #add-survey-btn {
+            background-color: #4c5861;
+            /* Original color */
+            color: var(--light-color);
+            padding: 0.9rem 1.6rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+            margin-inline: 0.2rem;
+        }
+
+        /*  Header Button Hover */
+        #add-survey-btn:hover {
+            background-color: #5e6c77;
+            /* Slightly darker */
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="image-container">
+            <img src="https://cdn.dribbble.com/users/7549673/screenshots/17206704/media/1210a9d0ec8af427967e735935861eeb.png?resize=70x60&vertical=center"
+                alt="Imagen">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2><i class="fas fa-filter"></i> Filtros</h2>
+            <ul>
+                <li><a href="#" data-filter="all"><i class="fas fa-list"></i> Todo</a></li>
+                <li><a href="#" data-filter="Samplicious"><i class="fas fa-check"></i> Samplicious</a></li>
+                <li><a href="#" data-filter="Spectrum"><i class="fas fa-chart-bar"></i> Spectrum</a></li>
+                <li><a href="#" data-filter="Cint"><i class="fas fa-arrows-alt"></i> Cint</a></li>
+                <li><a href="#" data-filter="Progede"><i class="fas fa-inbox"></i> Progede</a></li>
+                <li><a href="#" data-filter="Sample-cube"><i class="fas fa-cube"></i> Sample-cube</a></li>
+                <li><a href="#" data-filter="Invite"><i class="fas fa-inbox"></i> Invite</a></li>
+                <li><a href="#" data-filter="Roirocket"><i class="fas fa-rocket"></i> Roirocket</a></li>
+                <li><a href="#" data-filter="Internos"><i class="fas fa-users"></i> Internos</a></li>
+                <li><a href="#" data-filter="Survey.Dashmr"><i class="fas fa-tachometer-alt"></i> Survey.Dashmr</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar surveys...">
+                <i class="fas fa-search"></i>
+                     <div class="duplicate-options">
+                        <button id="find-duplicate-names">Duplicados por Nombre</button>
+                        <button id="find-duplicate-urls">Duplicados por URL</button>
+                         <button id="find-duplicate-tokens">Duplicados por Token</button>
+                         <button id="find-invalid-name-format" class="duplicate-options">Invalid Name Format</button>
+                </div>
+            </div>
+            <div id="current-filter" class="filter-display">Filtrando por: Todo</div>
+
+            <form id="add-survey-form">
+                <label for="nombre">Nombre del survey (URL):</label>
+                <input type="text" id="nombre" name="nombre" required>
+                <span id="nombre-error" class="error"></span>
+                <label for="url">URL del survey:</label>
+                <input type="text" id="url" name="url" required>
+                <span id="url-error" class="error"></span>
+
+                <label for="tipo">Tipo de Survey:</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="Samplicious">Samplicious</option>
+                    <option value="Spectrum">Spectrum</option>
+                    <option value="Cint">Cint</option>
+                    <option value="Progede">Progede</option>
+                    <option value="Sample-cube">Sample-cube</option>
+                    <option value="Invite">Invite</option>
+                    <option value="Roirocket">Roirocket</option>
+                    <option value="Internos">Internos</option>
+                    <option value="Survey.Dashmr">Survey.Dashmr</option>
+                </select>
+                <span id="tipo-error" class="error"></span>
+
+                <label for="fecha">Fecha:</label>
+                <input type="datetime-local" id="fecha" name="fecha" class="date-input" readonly>
+                <span id="fecha-error" class="error"></span>
+
+                <label for="comentario">Comentarios:</label>
+                <textarea id="comentario" name="comentario" required></textarea>
+                <span id="comentario-error" class="error"></span>
+
+                <button type="button" id="export-btn">Exportar a TXT</button>
+                <button type="button" id="cancel-btn">Cancelar</button>
+            </form>
+
+            <div id="notification-container"></div>
+
+            <div id="survey-table-container">
+                <table id="survey-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>URL</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Comentario</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-container">
+                        <!-- Datos dinámicos -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination-container">
+                <!-- Paginator links -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Full URL Popup Structure -->
+    <div class="url-popup" id="url-popup">
+        <p id="popup-url-content">Full URL Here</p>
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+
+</body>
+
+
+
+
+
+<script>
+
+    const addSurveyForm = document.getElementById('add-survey-form');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const surveyTableContainer = document.getElementById('survey-table-container');
+    const surveyTable = document.getElementById('survey-table').querySelector('tbody');
+    const filterLinks = document.querySelectorAll('.sidebar a');
+    const notificationContainer = document.getElementById('notification-container');
+    const exportBtn = document.getElementById('export-btn');
+    const paginationContainer = document.getElementById('pagination-container');
+    const searchInput = document.getElementById('search-input');
+    const findDuplicateNamesBtn = document.getElementById('find-duplicate-names');
+    const findDuplicateUrlsBtn = document.getElementById('find-duplicate-urls');
+    const findDuplicateTokensBtn = document.getElementById('find-duplicate-tokens');
+    const findInvalidNameFormatBtn = document.getElementById('find-invalid-name-format');
+    const currentFilterDisplay = document.getElementById('current-filter');
+    const searchContainer = document.querySelector('.search-container');
+    const fechaInput = document.getElementById('fecha');
+    const urlInput = document.getElementById('url');
+    const urlPopup = document.getElementById('url-popup');
+    const popupUrlContent = document.getElementById('popup-url-content');
+    const duplicateButtons = document.querySelectorAll('.duplicate-options button');
+
+    let surveys = [];
+    let allSurveys = []; //Store the raw data
+    let currentPage = 1;
+    let currentFilter = 'all';
+    let duplicateType = null;
+    let invalidNameFormat = false;
+    const surveysPerPage = 10;
+    let showingOnlyDuplicates = false;
+
+    const showNotification = (message, type = 'success') => {
+        const notification = document.createElement('div');
+        notification.classList.add('notification', type);
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notificationContainer.removeChild(notification);
+            }, 300);
+        }, 3000);
+    };
+
+    const loadSurveys = async () => {
+        try {
+            const response = await fetch(
+                'https://raw.githubusercontent.com/UnevennesX/-CheckLinks-/main/datos-info.txt'
+            );
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            const data = await response.text();
+            surveys = parseData(data).map(survey => ({
+                ...survey,
+                Fecha: survey.Fecha ? formatDateFromAPI(survey.Fecha) : 'Fecha inválida',
+                isDuplicate: false,
+                hasInvalidNameFormat: false
+            }));
+
+            allSurveys = [...surveys]; //Keep a reference to this.
+
+            filterSurveys(currentFilter); //Initial filtering
+            showNotification('.txt cargado correctamente', 'success');
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            showNotification(`Error: ${error.message}`, 'error');
+        }
+    };
+
+    const parseData = (text) => {
+        return text.split('----------------')
+            .filter(Boolean)
+            .map(block => {
+                const obj = {};
+                block.split('\n').map(line => line.trim()).forEach(line => {
+                    if (line.startsWith('Nombre:')) obj.Nombre = line.substring(7).trim();
+                    else if (line.startsWith('URL:')) obj.URL = line.substring(4).trim();
+                    else if (line.startsWith('Tipo de Survey:')) obj['Tipo de Survey'] = line.substring(16).trim();
+                    else if (line.startsWith('Fecha:')) obj.Fecha = line.substring(6).trim();
+                    else if (line.startsWith('Comentario:')) obj.Comentario = line.substring(11).trim();
+                });
+                return obj;
+            })
+            .filter(survey => survey.Nombre && survey['Tipo de Survey'] && survey.Fecha);
+    };
+
+    const formatDateFromAPI = (dateString) => {
+        if (!dateString) return 'Fecha inválida';
+        if (dateString.includes('T')) {
+            try {
+                const isoDate = new Date(dateString);
+                if (isNaN(isoDate)) return 'Fecha inválida';
+                const day = String(isoDate.getDate()).padStart(2, '0');
+                const month = String(isoDate.getMonth() + 1).padStart(2, '0');
+                const year = isoDate.getFullYear();
+                const hours = String(isoDate.getHours()).padStart(2, '0');
+                const minutes = String(isoDate.getMinutes()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            } catch (error) {
+                console.error("Error ISO:", dateString, error);
+                return 'Fecha inválida';
+            }
+        } else {
+            const months = {
+                'January': '01',
+                'February': '02',
+                'March': '03',
+                'April': '04',
+                'May': '05',
+                'June': '06',
+                'July': '07',
+                'August': '08',
+                'September': '09',
+                'October': '10',
+                'November': '11',
+                'December': '12',
+                'Enero': '01',
+                'Febrero': '02',
+                'Marzo': '03',
+                'Abril': '04',
+                'Mayo': '05',
+                'Junio': '06',
+                'Julio': '07',
+                'Agosto': '08',
+                'Septiembre': '09',
+                'Octubre': '10',
+                'Noviembre': '11',
+                'Diciembre': '12'
+            };
+            try {
+                const parts = dateString.split(/[.,\s]+/);
+                if (parts.length < 4) return 'Fecha inválida';
+                const day = parts[0].padStart(2, '0');
+                const monthName = parts[1];
+                const year = parts[2];
+                let time = parts[3] || '00:00';
+                let ampm = parts[4] || '';
+                const month = months[monthName];
+                if (!month) return 'Fecha inválida';
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                minutes = parseInt(minutes);
+                if (ampm && ampm.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+                else if (ampm && ampm.toUpperCase() === 'AM' && hours === 12) hours = 0;
+                hours = String(hours).padStart(2, '0');
+                minutes = String(minutes).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            } catch (error) {
+                console.error("Error Formato:", dateString, error);
+                return 'Fecha inválida';
+            }
+        }
+    };
+
+    const getCurrentPageSurveys = () => {
+        const startIndex = (currentPage - 1) * surveysPerPage;
+        const endIndex = currentPage * surveysPerPage;
+
+        if (Array.isArray(surveys)) {
+            return surveys.slice(startIndex, endIndex);
+        } else { //If we don't return, return an empty array
+            let values = Object.values(surveys);
+            return values.slice(startIndex, endIndex);
+        }
+    }
+
+    const renderTable = (data) => {
+        surveyTable.innerHTML = '';
+
+        const renderGroupedData = (groupedData, groupLabelFn) => {
+            let groupIndex = 0;
+            for (const key in groupedData) {
+                groupIndex++;
+                const group = groupedData[key];
+                const pageStartGroup = (currentPage - 1) * surveysPerPage + 1;
+                const pageEndGroup = currentPage * surveysPerPage;
+
+                if (groupIndex >= pageStartGroup && groupIndex <= pageEndGroup) {
+                    // Add white margin before each group
+                    const marginRow = surveyTable.insertRow();
+                    const marginCell = marginRow.insertCell();
+                    marginCell.colSpan = 5;
+                    marginCell.style.height = '2px';
+                    marginCell.style.backgroundColor = 'white';
+                    marginCell.style.padding = '0px';
+
+                    const row = surveyTable.insertRow();
+                    const groupLabel = groupLabelFn(group);
+
+                    const groupCell = row.insertCell();
+                    groupCell.classList.add('duplicate');
+                    groupCell.style.fontWeight = 'bold';
+                    groupCell.textContent = groupLabel;
+                    groupCell.colSpan = 5;
+
+                    group.forEach(survey => {
+                        const row = surveyTable.insertRow();
+                        const nombreCell = row.insertCell();
+                        nombreCell.style.maxWidth = '200px';
+                        nombreCell.style.overflow = 'hidden';
+                        nombreCell.style.textOverflow = 'ellipsis';
+                        nombreCell.style.whiteSpace = 'nowrap';
+                        nombreCell.textContent = survey.Nombre;
+
+                        const urlCell = row.insertCell();
+                        urlCell.innerHTML = `
+                            <div class="url-container">
+                                <button class="url-button" onclick="showPopup('${survey.URL}', event)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        `;
+
+                        const tipoCell = row.insertCell();
+                        tipoCell.textContent = survey['Tipo de Survey'];
+
+                        const fechaCell = row.insertCell();
+                        fechaCell.textContent = survey.Fecha || '';
+
+                        const comentarioCell = row.insertCell();
+                        comentarioCell.style.maxWidth = '300px';
+                        comentarioCell.style.overflow = 'hidden';
+                        comentarioCell.style.textOverflow = 'ellipsis';
+                        comentarioCell.style.whiteSpace = 'nowrap';
+                        comentarioCell.textContent = survey.Comentario || '';
+                    });
+                }
+            }
+        };
+
+        if (duplicateType) {
+            const groupedData = data;
+            const groupLabelFns = {
+                nombre: (group) => `Duplicate Nombre: ${group[0].Nombre} (Count: ${group.length})`,
+                url: (group) => `Duplicate URL: ${group[0].URL} (Count: ${group.length})`,
+                token: (group) => `Duplicate Token: ${group[0].URL.match(/token=(.*?)&/)?.[1] || ''} (Count: ${group.length})`
+            };
+            renderGroupedData(groupedData, groupLabelFns[duplicateType]);
+        } else if (invalidNameFormat) {
+            data.forEach(survey => {
+                const row = surveyTable.insertRow();
+                const nombreCell = row.insertCell();
+                nombreCell.style.maxWidth = '200px';
+                nombreCell.style.overflow = 'hidden';
+                nombreCell.style.textOverflow = 'ellipsis';
+                nombreCell.style.whiteSpace = 'nowrap';
+                nombreCell.textContent = survey.Nombre;
+
+                const urlCell = row.insertCell();
+                urlCell.innerHTML = `
+                    <div class="url-container">
+                        <button class="url-button" onclick="showPopup('${survey.URL}', event)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                `;
+
+                const tipoCell = row.insertCell();
+                tipoCell.textContent = survey['Tipo de Survey'];
+
+                const fechaCell = row.insertCell();
+                fechaCell.textContent = survey.Fecha || '';
+
+                const comentarioCell = row.insertCell();
+                comentarioCell.style.maxWidth = '300px';
+                comentarioCell.style.overflow = 'hidden';
+                comentarioCell.style.textOverflow = 'ellipsis';
+                comentarioCell.style.whiteSpace = 'nowrap';
+                comentarioCell.textContent = survey.Comentario || '';
+            });
+        }
+        else {
+            data.forEach(survey => {
+                const row = surveyTable.insertRow();
+                const nombreCell = row.insertCell();
+                nombreCell.style.maxWidth = '200px';
+                nombreCell.style.overflow = 'hidden';
+                nombreCell.style.textOverflow = 'ellipsis';
+                nombreCell.style.whiteSpace = 'nowrap';
+                nombreCell.textContent = survey.Nombre;
+
+                const urlCell = row.insertCell();
+                urlCell.innerHTML = `
+                    <div class="url-container">
+                        <button class="url-button" onclick="showPopup('${survey.URL}', event)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                `;
+
+                const tipoCell = row.insertCell();
+                tipoCell.textContent = survey['Tipo de Survey'];
+
+                const fechaCell = row.insertCell();
+                fechaCell.textContent = survey.Fecha || '';
+
+                const comentarioCell = row.insertCell();
+                comentarioCell.style.maxWidth = '300px';
+                comentarioCell.style.overflow = 'hidden';
+                comentarioCell.style.textOverflow = 'ellipsis';
+                comentarioCell.style.whiteSpace = 'nowrap';
+                comentarioCell.textContent = survey.Comentario || '';
+            });
+        }
+    };
+
+    // Function to show the popup
+    window.showPopup = (url, event) => {
+        event.stopPropagation();
+        popupUrlContent.textContent = url;
+        urlPopup.classList.add('show');
+    };
+
+    // Function to close the popup
+    window.closePopup = () => {
+        urlPopup.classList.remove('show');
+    };
+
+    const renderPagination = () => {
+        paginationContainer.innerHTML = '';
+
+        let totalPages = 0;
+        if (showingOnlyDuplicates || invalidNameFormat) {
+            totalPages = Math.ceil(Object.keys(surveys).length / surveysPerPage); // Grouped
+        } else {
+            totalPages = Math.ceil(surveys.length / surveysPerPage); // Standard array
+        }
+
+        if (totalPages <= 1) return;
+        if (addSurveyForm.classList.contains('active')) return;
+
+        const maxPagesToShow = 10;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+        if (endPage - startPage + 1 < maxPagesToShow && endPage === totalPages) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+
+        let paginationHTML = '';
+
+        if (currentPage > 1) {
+            paginationHTML += `<a href="#" class="pagination-arrow" data-page="${currentPage - 1}">« Anterior</a>`;
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `<a href="#" class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>`;
+        }
+
+        if (currentPage < totalPages) {
+            paginationHTML += `<a href="#" class="pagination-arrow" data-page="${currentPage + 1}">Siguiente »</a>`;
+        }
+
+        paginationContainer.innerHTML = paginationHTML;
+
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = parseInt(link.dataset.page);
+                if (!isNaN(page) && page !== currentPage) {
+                    currentPage = page;
+                    renderTable(getCurrentPageSurveys());
+                    renderPagination();
+                }
+            });
+        });
+    };
+
+    const showForm = () => {
+        addSurveyForm.classList.add('active');
+        surveyTableContainer.classList.add('hidden');
+        paginationContainer.innerHTML = '';
+        searchContainer.classList.add('hidden');
+        currentFilterDisplay.classList.add('hidden');
+    };
+
+    const hideForm = () => {
+        addSurveyForm.classList.remove('active');
+        surveyTableContainer.classList.remove('hidden');
+        searchContainer.classList.remove('hidden');
+        currentFilterDisplay.classList.remove('hidden');
+        filterSurveys(currentFilter);
+        addSurveyForm.reset();
+    };
+
+    const filterSurveys = (filter) => {
+        if (addSurveyForm.classList.contains('active')) {
+            hideForm();
+        }
+        currentFilter = filter;
+        currentPage = 1;
+
+        duplicateType = null;
+        invalidNameFormat = false;
+        showingOnlyDuplicates = false; //Make sure its turned off!
+        duplicateButtons.forEach(button => button.classList.remove('active'));
+        findInvalidNameFormatBtn.classList.remove('active'); //Deselect the format button as well.
+
+        //Filter out what you need only!
+        surveys = currentFilter === 'all' ? [...allSurveys] : allSurveys.filter(survey => survey['Tipo de Survey'] === currentFilter);
+
+        applySearch();
+        updateActiveFilter();
+        updateFilterDisplay();
+        renderTable(getCurrentPageSurveys());
+        renderPagination();
+    };
+
+    const updateActiveFilter = () => {
+        filterLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.filter === currentFilter);
+        });
+    };
+
+    const updateFilterDisplay = () => {
+        const filterNameMap = {
+            'all': 'Todo',
+            'Samplicious': 'Samplicious',
+            'Spectrum': 'Spectrum',
+            'Cint': 'Cint',
+            'Progede': 'Progede',
+            'Sample-cube': 'Sample-cube',
+            'Invite': 'Invite',
+            'Roirocket': 'Roirocket',
+            'Internos': 'Internos',
+            'Survey.Dashmr': 'Survey.Dashmr'
+        };
+
+        const filterName = filterNameMap[currentFilter] || 'Desconocido';
+        currentFilterDisplay.textContent = `Filtrando por: ${filterName}`;
+    };
+
+    filterLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            filterSurveys(e.target.dataset.filter);
+        });
+    });
+
+    cancelBtn.addEventListener('click', hideForm);
+
+    const isValidUrl = (url) => {
+        try {
+            new URL(url);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    };
+
+    const generateTxtContent = (survey) => {
+        return `----------------\nNombre: ${survey.Nombre}\nURL: ${survey.URL || ''}\nTipo de Survey: ${survey['Tipo de Survey']}\nFecha: ${survey.Fecha || ''}\nComentario: ${survey.Comentario || ''}\n\n`;
+    };
+
+    const downloadTxtFile = (content) => {
+        const nombre = document.getElementById('nombre').value;
+        const existingSurveys = surveys.map(s => s.Nombre.toLowerCase().trim());
+        if (existingSurveys.includes(nombre.toLowerCase().trim())) {
+            showNotification('Esta survey ya esta agregada en el .txt.', 'error');
+            return;
+        }
+
+        const element = document.createElement('a');
+        const file = new Blob([content], {
+            type: 'text/plain'
+        });
+        element.href = URL.createObjectURL(file);
+        element.download = `${nombre.replace(/[^a-z0-9]/gi, '_')}.txt`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    };
+
+    exportBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+        const nombre = document.getElementById('nombre').value;
+        const url = document.getElementById('url').value;
+        const tipo = document.getElementById('tipo').value;
+        const fecha = document.getElementById('fecha').value;
+        const comentario = document.getElementById('comentario').value;
+
+        let hasErrors = false;
+        if (!isValidUrl(nombre)) {
+            document.getElementById('nombre-error').textContent = 'URL no válida.';
+            showNotification('URL no válida.', 'error');
+            hasErrors = true;
+        }
+        if (!nombre) {
+            document.getElementById('nombre-error').textContent = 'Obligatorio.';
+            showNotification('Nombre obligatorio.', 'error');
+            hasErrors = true;
+        }
+        if (!url) {
+            document.getElementById('url-error').textContent = 'Obligatorio.';
+            showNotification('URL obligatorio.', 'error');
+            hasErrors = true;
+        }
+        if (!tipo) {
+            document.getElementById('tipo-error').textContent = 'Obligatorio.';
+            showNotification('Tipo obligatorio.', 'error');
+            hasErrors = true;
+        }
+        if (!comentario) {
+            document.getElementById('comentario-error').textContent = 'Obligatorio.';
+            showNotification('Comentario obligatorio.', 'error');
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
+
+        const newSurvey = {
+            Nombre: nombre,
+            URL: url, // Use the URL from the URL input
+            'Tipo de Survey': tipo,
+            Fecha: fecha,
+            Comentario: comentario,
+
+        };
+        const txtContent = generateTxtContent(newSurvey);
+        downloadTxtFile(txtContent);
+        showNotification('Survey exportado correctamente.', 'success');
+        hideForm();
+    });
+
+    let searchTerm = '';
+
+    function findDuplicates(type) {
+
+        // Restore the surveys to the originals
+        surveys = [...allSurveys];
+
+        //Remove the other button.
+        duplicateButtons.forEach(button => button.classList.remove('active'));
+        findInvalidNameFormatBtn.classList.remove('active');
+
+        // Add active class to the clicked button
+        if (type === 'nombre') {
+            findDuplicateNamesBtn.classList.add('active');
+        } else if (type === 'url') {
+            findDuplicateUrlsBtn.classList.add('active');
+        } else if (type === 'token') {
+            findDuplicateTokensBtn.classList.add('active');
+        }
+
+        duplicateType = type;
+        invalidNameFormat = false;
+        showingOnlyDuplicates = true; //Important set!
+
+        const groupedData = {};
+
+        surveys.forEach(survey => {
+            let key = null;
+
+            if (type === 'nombre') {
+                key = `${survey.Nombre.toLowerCase()}-${survey['Tipo de Survey']}`;
+            } else if (type === 'url') {
+                key = `${survey.URL.toLowerCase()}-${survey['Tipo de Survey']}`;
+            } else if (type === 'token' && survey['Tipo de Survey'] === 'Samplicious') {
+                const token = survey.URL.match(/token=(.*?)&/)?.[1] || '';
+                if (token) {
+                    key = token.toLowerCase();
+                }
+            }
+
+            if (key) {
+                if (!groupedData[key]) {
+                    groupedData[key] = [];
+                }
+                groupedData[key].push(survey);
+            }
+        });
+
+        let filteredList = {}; //Used just for the pagination
+        for (const key in groupedData) {
+            if (groupedData.hasOwnProperty(key)) {
+                if (groupedData[key].length > 1) {
+                    filteredList[key] = groupedData[key];
+                }
+            }
+        }
+
+        //We will use allSurveys to keep the old state of the application.
+        surveys = filteredList;
+        currentPage = 1; //Reset on each press.
+        renderTable(surveys); //Pass in a plain list.
+        renderPagination(); //Llamamos a renderPagination después de actualizar filteredSurveys
+    }
+
+    function applyNameFormatFilter() {
+
+        surveys = [...allSurveys]; //Copy over the old data
+        duplicateButtons.forEach(button => button.classList.remove('active'));
+        findInvalidNameFormatBtn.classList.add('active');
+        duplicateType = null;
+        invalidNameFormat = true;
+        showingOnlyDuplicates = true;
+
+        surveys.forEach(survey => {
+            survey.hasInvalidNameFormat = !survey.Nombre.startsWith('https://');
+        });
+
+        let filteredList = surveys.filter(survey => survey.hasInvalidNameFormat) //Filter
+
+        surveys = filteredList; //Update the list with the new data
+        currentPage = 1;
+        renderTable(surveys); //Render what we currently want
+        renderPagination();
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value.trim().toLowerCase();
+        applySearch();
+    });
+
+    findDuplicateNamesBtn.addEventListener('click', () => findDuplicates('nombre'));
+    findDuplicateUrlsBtn.addEventListener('click', () => findDuplicates('url'));
+    findDuplicateTokensBtn.addEventListener('click', () => findDuplicates('token'));
+
+    findInvalidNameFormatBtn.addEventListener('click', applyNameFormatFilter);
+
+    function applySearch() {
+        //Restore data each time.
+        surveys = [...allSurveys];
+
+        //Now we can apply the search, on the old data.
+        surveys = surveys.filter(survey => { //Search from the whole records
+            const matchesType = currentFilter === 'all' || survey['Tipo de Survey'] === currentFilter;
+            const matchesSearch =
+                searchTerm === '' ||
+                survey.Nombre.toLowerCase().includes(searchTerm) ||
+                survey.URL.toLowerCase().includes(searchTerm) ||
+                (survey.URL.match(/token=(.*?)&/)?.[1] || '').toLowerCase().includes(searchTerm);
+
+            return matchesType && matchesSearch;
+        });
+
+        if (showingOnlyDuplicates) {
+            const groupedData = {};
+
+            surveys.forEach(survey => {
+                let key = null;
+
+                if (duplicateType === 'nombre') {
+                    key = `${survey.Nombre.toLowerCase()}-${survey['Tipo de Survey']}`;
+                } else if (duplicateType === 'url') {
+                    key = `${survey.URL.toLowerCase()}-${survey['Tipo de Survey']}`;
+                } else if (duplicateType === 'token' && survey['Tipo de Survey'] === 'Samplicious') {
+                    const token = survey.URL.match(/token=(.*?)&/)?.[1] || '';
+                    if (token) {
+                        key = token.toLowerCase();
+                    }
+                }
+
+                if (key) {
+                    if (!groupedData[key]) {
+                        groupedData[key] = [];
+                    }
+                    groupedData[key].push(survey);
+                }
+            });
+
+            let filteredList = {}; //Used just for the pagination
+            for (const key in groupedData) {
+                if (groupedData.hasOwnProperty(key)) {
+                    if (groupedData[key].length > 1) {
+                        filteredList[key] = groupedData[key];
+                    }
+                }
+            }
+            surveys = filteredList;
+        }
+
+        if (invalidNameFormat) {
+            surveys = surveys.filter(survey => survey.hasInvalidNameFormat);
+        }
+
+        currentPage = 1;
+        renderTable(getCurrentPageSurveys());
+        renderPagination();
+    }
+
+    loadSurveys();
+</script>
+
+
+</html>
